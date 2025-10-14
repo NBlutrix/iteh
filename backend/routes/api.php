@@ -15,5 +15,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // Ruta koja vraća trenutno ulogovanog korisnika
     Route::get('/user', function (Request $request) {
         return response()->json($request->user(), 200);
+
+    Route::apiResource('movies', MovieController::class);
+    Route::apiResource('genres', GenreController::class);
+    Route::apiResource('reviews', ReviewController::class);
+    Route::apiResource('watchlists', WatchlistController::class);
     });
 });
