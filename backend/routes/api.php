@@ -12,18 +12,23 @@ use App\Http\Controllers\WatchlistController;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-// Protected rute (za korisnike koji šalju Bearer token)
+// Protected rute
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    // Ruta koja vraća trenutno ulogovanog korisnika
     Route::get('/user', function (Request $request) {
         return response()->json($request->user(), 200);
     });
 
-    // API resource rute za CRUD
+    // CRUD za filmove i žanrove
     Route::apiResource('movies', MovieController::class);
     Route::apiResource('genres', GenreController::class);
-    Route::apiResource('reviews', ReviewController::class);
     Route::apiResource('watchlists', WatchlistController::class);
+
+    // Reviews rute sa movieId
+    Route::get('/movies/{movie}/reviews', [ReviewController::class, 'index']);
+    Route::post('/movies/{movie}/reviews', [ReviewController::class, 'store']);
+    Route::get('/reviews/{review}', [ReviewController::class, 'show']);
+    Route::put('/reviews/{review}', [ReviewController::class, 'update']);
+    Route::delete('/reviews/{review}', [ReviewController::class, 'destroy']);
 });

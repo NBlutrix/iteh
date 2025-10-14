@@ -1,28 +1,27 @@
-import React, { useEffect, useState } from 'react';
-import api from '../api';
+import React from 'react';
+import api, { removeToken } from '../api';
 
-export default function Profile() {
-  const [user, setUser] = useState(null);
+export default function Profile({ user, setUser }) {
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res = await api.get('/user');
-        setUser(res.data);
-      } catch (err) {
-        console.error(err.response?.data);
-      }
-    };
-    fetchUser();
-  }, []);
+  const handleLogout = async () => {
+    try {
+      await api.post('/logout');
+      removeToken();
+      setUser(null);
+    } catch (err) {
+      console.error(err);
+      alert('Error logging out');
+    }
+  };
 
   if (!user) return <div>Loading...</div>;
 
   return (
     <div>
       <h2>Profile</h2>
-      <p>Email: {user.email}</p>
-      <p>Role ID: {user.role_id}</p>
+      <p><strong>Name:</strong> {user.name}</p>
+      <p><strong>Email:</strong> {user.email}</p>
+      <button onClick={handleLogout}>Logout</button>
     </div>
   );
 }

@@ -10,7 +10,7 @@ export default function Genres() {
       const res = await api.get('/genres');
       setGenres(res.data);
     } catch (err) {
-      console.error(err.response?.data);
+      alert(err.response?.data?.message || 'Error fetching genres');
     }
   };
 
@@ -20,7 +20,7 @@ export default function Genres() {
       setName('');
       fetchGenres();
     } catch (err) {
-      console.error(err.response?.data);
+      alert(err.response?.data?.message || 'Error adding genre');
     }
   };
 

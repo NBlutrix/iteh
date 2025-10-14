@@ -1,44 +1,30 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import api from '../api';
 
 export default function Reviews() {
-  const [reviews, setReviews] = useState([]);
-  const [content, setContent] = useState('');
-  const [movie_id, setMovieId] = useState('');
-
-  const fetchReviews = async () => {
-    try {
-      const res = await api.get('/reviews');
-      setReviews(res.data);
-    } catch (err) {
-      console.error(err.response?.data);
-    }
-  };
+  const [movieId, setMovieId] = useState('');
+  const [rating, setRating] = useState('');
+  const [comment, setComment] = useState('');
 
   const addReview = async () => {
     try {
-      await api.post('/reviews', { content, movie_id });
-      setContent('');
+      await api.post(`/movies/${movieId}/reviews`, { rating, comment });
       setMovieId('');
-      fetchReviews();
+      setRating('');
+      setComment('');
+      alert('Review added!');
     } catch (err) {
-      console.error(err.response?.data);
+      alert(err.response?.data?.message || 'Error adding review');
     }
   };
-
-  useEffect(() => {
-    fetchReviews();
-  }, []);
 
   return (
     <div>
       <h2>Reviews</h2>
-      <input placeholder="Movie ID" value={movie_id} onChange={e => setMovieId(e.target.value)} />
-      <input placeholder="Content" value={content} onChange={e => setContent(e.target.value)} />
+      <input placeholder="Movie ID" value={movieId} onChange={e => setMovieId(e.target.value)} />
+      <input placeholder="Rating 1-10" value={rating} onChange={e => setRating(e.target.value)} />
+      <input placeholder="Comment" value={comment} onChange={e => setComment(e.target.value)} />
       <button onClick={addReview}>Add Review</button>
-      <ul>
-        {reviews.map(r => <li key={r.id}>{r.content} (Movie: {r.movie_id})</li>)}
-      </ul>
     </div>
   );
 }

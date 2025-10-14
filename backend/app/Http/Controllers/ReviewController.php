@@ -10,25 +10,21 @@ use Illuminate\Support\Facades\Auth;
 class ReviewController extends Controller
 {
     // Lista svih recenzija za film
-    public function index($movieId)
+    public function index(Movie $movie)
     {
-        $movie = Movie::findOrFail($movieId);
         return response()->json($movie->reviews()->with('user')->get(), 200);
     }
 
     // Kreiranje nove recenzije
-    public function store(Request $request, $movieId)
+    public function store(Request $request, Movie $movie)
     {
         $request->validate([
             'rating' => 'required|integer|min:1|max:10',
             'comment' => 'nullable|string|max:1000'
         ]);
 
-        $movie = Movie::findOrFail($movieId);
-
-        $review = Review::create([
+        $review = $movie->reviews()->create([
             'user_id' => Auth::id(),
-            'movie_id' => $movie->id,
             'rating' => $request->rating,
             'comment' => $request->comment
         ]);
@@ -37,17 +33,14 @@ class ReviewController extends Controller
     }
 
     // Prikaz jedne recenzije
-    public function show($id)
+    public function show(Review $review)
     {
-        $review = Review::with('user', 'movie')->findOrFail($id);
-        return response()->json($review, 200);
+        return response()->json($review->load('user', 'movie'), 200);
     }
 
     // Ažuriranje recenzije
-    public function update(Request $request, $id)
+    public function update(Request $request, Review $review)
     {
-        $review = Review::findOrFail($id);
-
         if ($review->user_id != Auth::id()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
@@ -63,10 +56,8 @@ class ReviewController extends Controller
     }
 
     // Brisanje recenzije
-    public function destroy($id)
+    public function destroy(Review $review)
     {
-        $review = Review::findOrFail($id);
-
         if ($review->user_id != Auth::id()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }

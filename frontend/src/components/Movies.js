@@ -10,7 +10,7 @@ export default function Movies() {
       const res = await api.get('/movies');
       setMovies(res.data);
     } catch (err) {
-      console.error(err.response?.data);
+      alert(err.response?.data?.message || 'Error fetching movies');
     }
   };
 
@@ -20,7 +20,7 @@ export default function Movies() {
       setTitle('');
       fetchMovies();
     } catch (err) {
-      console.error(err.response?.data);
+      alert(err.response?.data?.message || 'Error adding movie');
     }
   };
 
